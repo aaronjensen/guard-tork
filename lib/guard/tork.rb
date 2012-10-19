@@ -58,7 +58,11 @@ module Guard
     # @param [Array<String>] paths the changes files or paths
     # @raise [:task_has_failed] when run_on_change has failed
     def run_on_changes(paths)
-      @engine.puts JSON.dump([:run_test_files, paths])
+      if paths.first == 'reload'
+        reload
+      else
+        @engine.puts JSON.dump([:run_test_files, paths])
+      end
     end
 
     ## Called on file(s) deletions that the Guard watches.
