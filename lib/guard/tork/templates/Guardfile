@@ -1,0 +1,23 @@
+tork_event_handler = proc do |(event, test_file, *details)|
+  message = [event.upcase, test_file].join(' ')
+  case event.to_sym
+  when :absorb
+    UI.info 'tork: Overhead absorbed. Ready for testing!'
+  when :fail
+    UI.error message
+  when :fail_now_pass
+    Notifier.notify details, :title => test_file, :image => :success
+  when :pass_now_fail
+    Notifier.notify details, :title => test_file, :image => :failure
+  else
+    UI.info message
+  end
+end
+
+guard :tork, :event_handler => tork_event_handler do
+  #ENV['TORK_CONFIGS'] = 'your_value_here'
+  watch(%r{^(test|spec)/.*(?:\1_.+|.+_\1)\.rb$})
+
+  #TODO https://groups.google.com/d/topic/guard-dev/rvzmmPz9u2w/discussion
+  #watch(%r{(test|spec)/\1_helper\.rb}) { reload }
+end
